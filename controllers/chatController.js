@@ -87,3 +87,42 @@ export const renameGroup = async (req, res) => {
   }
 };
 
+export const addToGroup = async (req, res) => {
+    try {
+      const { chatId, userId } = req.body;
+      if (!chatId || !userId) return res.status(400).json({ message: "Invalid data" });
+  
+      const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        { $push: { members: userId } },
+        { new: true }
+      ).populate("members", "-password");
+  
+      if (!updatedChat) return res.status(404).json({ message: "Chat not found" });
+  
+      res.status(200).json({ success: true, data: updatedChat });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  
+  
+  export const removeFromGroup = async (req, res) => {
+    try {
+      const { chatId, userId } = req.body;
+      if (!chatId || !userId) return res.status(400).json({ message: "Invalid data" });
+  
+      const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        { $pull: { members: userId } },
+        { new: true }
+      ).populate("members", "-password");
+  
+      if (!updatedChat) return res.status(404).json({ message: "Chat not found" });
+  
+      res.status(200).json({ success: true, data: updatedChat });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
