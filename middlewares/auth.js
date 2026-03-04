@@ -1,19 +1,33 @@
 import jwt from "jsonwebtoken"
-import User from "../models/userModel.js"
+import User from "../models/index.js"
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.cookies?.token
+        let token
 
-        if (!token) return res.status(401).json({ message: "Login required" })
+        if (req.cookies && req.cookies.token) {
+            token = req.cookies.token
+        } else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+            token = req.headers.authorization.split(" ")[1]
+        }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        if (!token) {
+            return res.status(401).json({ message: "Please login first" })
+        }
 
-        req.user = await User.findById(decoded.id).select("-password")
+        const decodedData = jwt.verify(token, process.env.JWT_SECRET)
 
+        const existingUser = await User.findById(decodedData.id).select("-password")
+
+        if (!existingUser) {
+            return res.status(401).json({ message: "User not found" })
+        }
+
+        req.user = existingUser
         next()
+
     } catch (err) {
-        res.status(401).json({ message: "Unauthorized" })
+        return res.status(401).json({ message: "Invalid or expired token" })
     }
 }
 
