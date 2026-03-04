@@ -3,13 +3,15 @@ const app = express()
 import dotenv from 'dotenv'
 import dbconnection from "./config/db.js"
 import authRouter from "./routers/authRouter.js" 
+import cookieParser from "cookie-parser"
+
 
 dotenv.config()
 dbconnection()
 
 app.use(express.json())
 app.use("/auth", authRouter)
-
+app.use(cookieParser())
 app.get("/", (req, res) => {
     res.send("API is running...");
   });
