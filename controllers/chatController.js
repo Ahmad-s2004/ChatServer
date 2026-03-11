@@ -1,6 +1,4 @@
-import Chat from "../models/chatModel.js";
-import User from "../models/userModel.js";
-import Message from "../models/messageModel.js";
+import {Chat} from "../models/index.js";
 
 const findExistingChat = async (userId1, userId2) => {
   return await Chat.findOne({
