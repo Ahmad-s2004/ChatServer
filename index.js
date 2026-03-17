@@ -2,7 +2,7 @@ import express from "express"
 const app = express()
 import dotenv from 'dotenv'
 import dbconnection from "./config/db.js"
-import authRouter from "./routers/authRouter.js" 
+import authRouter from "./routers/authRoute.js" 
 import cookieParser from "cookie-parser"
 
 

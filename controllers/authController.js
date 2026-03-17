@@ -1,4 +1,5 @@
 import {User} from "../models/index.js"
+import generateToken from "../utils/generateToken.js"
 import jwt from "jsonwebtoken"
 let SECRET_KEY = 'akbjsdh089iandoPA{DpOS:AD;ASPOHDI'
 
@@ -38,7 +39,7 @@ let login = async(req, res)=>{
         if(existingUser.password !== password){
             return res.status(401).json({success:false, message:"Invalid credentials"})
         }
-        let token = jwt.sign({id: existingUser._id}, SECRET_KEY)
+        let token = generateToken(existingUser._id)
         return res.status(200).json({success:true, message:"login successful", token})
     } catch (error) {
         return res.status(500).json({success:false, message:"Internal server error"})
