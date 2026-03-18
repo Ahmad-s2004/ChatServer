@@ -1,5 +1,4 @@
-const User = require("../models/index.js")
-
+import { User } from "../models/index.js"
 
 const getAllUser = async (req, res) => {
   try {
@@ -38,7 +37,7 @@ const getSingleUser = async (req, res) => {
     }
   }
 
-exports = {
+export {
   getAllUser,
   getSingleUser,
   searchUser
