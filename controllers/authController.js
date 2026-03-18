@@ -48,8 +48,7 @@ let login = async(req, res)=>{
 
 
 let logout = async(req, res)=>{
-    
-    return res.json({message:"ha bhao"})
+    return res.status(200).json({success: true, message: "Logged out successfully"})
 }
 
 export {
