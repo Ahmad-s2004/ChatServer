@@ -4,7 +4,7 @@ import express from "express"
 const userRouter = express.Router()
 
 userRouter.get("/", getAllUser)
-userRouter.get("/:id", getSingleUser)
 userRouter.get("/search", searchUser)
+userRouter.get("/:id", getSingleUser)
 
 export default userRouter
