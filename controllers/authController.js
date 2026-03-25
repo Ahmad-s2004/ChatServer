@@ -1,7 +1,5 @@
 import {User} from "../models/index.js"
 import generateToken from "../utils/generateToken.js"
-import jwt from "jsonwebtoken"
-let SECRET_KEY = 'akbjsdh089iandoPA{DpOS:AD;ASPOHDI'
 
 
 
@@ -20,8 +18,7 @@ let register = async(req, res) =>{
         await User.create({name, email, password})
         res.status(201).json({success: true, message:"User created successfully"})
         } catch (error) {
-            res.status(500).json({success: false, message:"Internal server error", error})
-            console.log(req.body)
+           return res.status(500).json({success: false, message:"Internal server error"})
         }
 
 }
