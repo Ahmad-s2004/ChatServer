@@ -3,7 +3,7 @@ import path from "path"
 import dotenv from "dotenv"
 
 dotenv.config({
-    path: path.resolve("config/.env"),
+    path: path.resolve("../config/.env"),
   });
 
 const generateToken = (id) => {
