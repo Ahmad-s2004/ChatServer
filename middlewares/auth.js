@@ -1,5 +1,11 @@
 import jwt from "jsonwebtoken"
-import User from "../models/index.js"
+import {User} from "../models/index.js"
+import path from "path"
+import dotenv from "dotenv"
+
+dotenv.config({
+    path: path.resolve("../config/.env"),
+  });
 
 const auth = async (req, res, next) => {
     try {
@@ -15,7 +21,7 @@ const auth = async (req, res, next) => {
             return res.status(401).json({ message: "Please login first" })
         }
 
-        const decodedData = jwt.verify(token, process.env.JWT_SECRET)
+        const decodedData = jwt.verify(token, process.env.SECRET_KEY)
 
         const existingUser = await User.findById(decodedData.id).select("-password")
 
@@ -27,6 +33,7 @@ const auth = async (req, res, next) => {
         next()
 
     } catch (err) {
+        console.log(err)
         return res.status(401).json({ message: "Invalid or expired token" })
     }
 }
