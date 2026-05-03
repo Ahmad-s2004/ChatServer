@@ -7,6 +7,7 @@ import userRouter from "./routers/userRoute.js";
 import messageRouter from "./routers/messageRoute.js";
 import cookieParser from "cookie-parser";
 import { init } from "./utils/socket.js";
+import cors from "cors"
 
 dotenv.config();
 dbconnection();
@@ -17,6 +18,11 @@ const io = init(server);
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true,
+    methods:['POST','GET','UPDATE','DELETE'],
+}))
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
