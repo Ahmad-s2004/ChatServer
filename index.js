@@ -1,8 +1,8 @@
 import express from "express";
-import http from "http"; // 1. HTTP module import karein
+import http from "http";
 import dotenv from 'dotenv';
 import dbconnection from "./config/db.js";
-import authRouter from "./routers/authRoute.js"; 
+import authRouter from "./routers/authRoute.js";
 import userRouter from "./routers/userRoute.js";
 import messageRouter from "./routers/messageRoute.js";
 import cookieParser from "cookie-parser";
@@ -18,11 +18,29 @@ const io = init(server);
 
 app.use(express.json());
 app.use(cookieParser());
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://chat-client-alpha-nine.vercel.app"
+];
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true,
-    methods:['POST','GET','UPDATE','DELETE'],
-}))
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+// app.use(cors({
+//     origin:"http://localhost:5173",
+//     credentials:true,
+//     methods:['POST','GET','UPDATE','DELETE'],
+// }))
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
