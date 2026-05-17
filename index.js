@@ -7,21 +7,25 @@ import userRouter from "./routers/userRoute.js";
 import messageRouter from "./routers/messageRoute.js";
 import cookieParser from "cookie-parser";
 import { init } from "./utils/socket.js";
-import cors from "cors"
+import cors from "cors";
 
 dotenv.config();
 dbconnection();
 
 const app = express();
 const server = http.createServer(app);
+
+// 🌟 Socket initialization (Iske andar CORS set karna zaroori hai jaisa upar bataya)
 const io = init(server);
 
 app.use(express.json());
 app.use(cookieParser());
+
 const allowedOrigins = [
     "http://localhost:5173",
     "https://chat-client-alpha-nine.vercel.app"
 ];
+
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
@@ -36,24 +40,45 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
-// app.use(cors({
-//     origin:"http://localhost:5173",
-//     credentials:true,
-//     methods:['POST','GET','UPDATE','DELETE'],
-// }))
+
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
 
+export const onlineUsers = new Map(); 
+
 io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
-    if (userId) {
+    
+    if (userId && userId !== "undefined") {
         socket.join(userId);
-        console.log(`User Connected: ${userId}`);
+        onlineUsers.set(userId, socket.id);
+        console.log(`User Connected: ${userId} with Socket: ${socket.id}`);
+        io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
     }
 
+    socket.on("send_message", (data) => {
+        const { receiverId, content, senderId, chatId, _id, createdAt } = data;
+
+        console.log(`Message from ${senderId} to ${receiverId}: ${content}`);
+
+        if (receiverId) {
+            io.to(receiverId).emit("receive_message", {
+                _id,
+                chatId,
+                senderId,
+                content,
+                createdAt
+            });
+        }
+    });
+
     socket.on("disconnect", () => {
-        console.log("User Disconnected", socket.id);
+        if (userId) {
+            onlineUsers.delete(userId);
+            console.log(`User Disconnected: ${userId}`);
+            io.emit("getOnlineUsers", Array.from(onlineUsers.keys()));
+        }
     });
 });
 
@@ -65,3 +90,5 @@ const PORT = process.env.PORT || 4550;
 server.listen(PORT, () => {
     console.log(`Server is started at port ${PORT}`);
 });
+
+export { io };

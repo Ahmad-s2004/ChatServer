@@ -5,8 +5,10 @@ let io;
 export const init = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
+            //  Wildcard "*" ko hata kar exact domains de diye
+            origin: ["http://localhost:5173", "https://chat-client-alpha-nine.vercel.app"],
+            methods: ["GET", "POST"],
+            credentials: true // 👈 Yeh sab se zaroori line hai jo missing thi!
         }
     });
     return io;
