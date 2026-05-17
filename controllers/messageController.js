@@ -40,23 +40,31 @@ let sendMessage = async (req, res) => {
 
 let getMessage = async (req, res) => {
   try {
-    const { chatId } = req.params
+    const { chatId } = req.params;
+    const currentUserId = req.user?._id;
+
     if (!chatId) {
-      return res.status(400).json({ success: false, message: "Chat ID is required " })
+      return res.status(400).json({ success: false, message: "Chat ID / User ID is required" });
     }
-    const messages = await Message.find({ chatId })
-      .populate("senderId", "name")
-      .sort({ createdAt: 1 })
+    const messages = await Message.find({
+      $or: [
+        { chatId: chatId, senderId: currentUserId },
+        { chatId: currentUserId, senderId: chatId }
+      ]
+    })
+    .populate("senderId", "name")
+    .sort({ createdAt: 1 }); 
+
     return res.status(200).json({
       success: true,
       messages
-    })
+    });
 
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ success: false, message: "Internal server error" })
+    console.log(error);
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
-}
+};
 
 export {
   sendMessage,
