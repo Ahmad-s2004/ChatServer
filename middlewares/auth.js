@@ -28,8 +28,8 @@ const auth = async (req, res, next) => {
         if (!existingUser) {
             return res.status(401).json({ message: "User not found" })
         }
-
         req.user = existingUser
+        // console.log(req.user, "here boy")
         next()
 
     } catch (err) {

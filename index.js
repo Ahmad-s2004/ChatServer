@@ -8,14 +8,16 @@ import messageRouter from "./routers/messageRoute.js";
 import cookieParser from "cookie-parser";
 import { init } from "./utils/socket.js";
 import cors from "cors";
+import path from 'path'
 
-dotenv.config();
+dotenv.config({
+    path: path.resolve("./config/.env"),
+});
 dbconnection();
 
 const app = express();
 const server = http.createServer(app);
 
-// 🌟 Socket initialization (Iske andar CORS set karna zaroori hai jaisa upar bataya)
 const io = init(server);
 
 app.use(express.json());
@@ -60,7 +62,7 @@ io.on("connection", (socket) => {
     socket.on("send_message", (data) => {
         const { receiverId, content, senderId, chatId, _id, createdAt } = data;
 
-        console.log(`Message from ${senderId} to ${receiverId}: ${content}`);
+        console.log(`Message from ${senderId} id ${_id} chat.id ${chatId}  to ${receiverId}: ${content}`);
 
         if (receiverId) {
             io.to(receiverId).emit("receive_message", {
