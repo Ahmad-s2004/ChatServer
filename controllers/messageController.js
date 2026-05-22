@@ -53,7 +53,8 @@ let getMessage = async (req, res) => {
       ]
     })
     .populate("senderId", "name")
-    .sort({ createdAt: 1 }); 
+    .sort({ createdAt: 1 })
+    .limit(10); 
 
     return res.status(200).json({
       success: true,
